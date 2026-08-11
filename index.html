@@ -219,6 +219,7 @@
       <a href="#usage">クライアント接続手順</a>
       <a href="#security">セキュリティ設計</a>
       <a href="#ops">運用</a>
+      <a href="#build">自分で構築する</a>
     </nav>
 
     <div class="try-card" id="try-it">
@@ -446,6 +447,86 @@ stateDiagram-v2
     <p>スキル本文はサーバー側の1ファイルとして管理しており、内容を更新して再デプロイするだけで
     次回呼び出しから全利用者に反映されます。個別のクライアント側の再設定は不要です。</p>
     <p>トークンの発行・一覧・失効は管理API経由でコマンド一つで行えます。利用状況もいつでも確認できます。</p>
+  </section>
+
+  <section id="build">
+    <h2>自分で構築する</h2>
+    <p>
+      このページは「できあがったシステムの使い方」の説明でしたが、ここからは同じものを
+      ゼロから作りたい場合の手順です。実装自体はAIコーディングツール（Claude Code など）に
+      下の要件をそのまま渡せば、ほぼ自動で組み上がります。
+    </p>
+
+    <h3>必要なもの</h3>
+    <ul>
+      <li>Cloudflareアカウント（無料。<a href="https://dash.cloudflare.com/sign-up" target="_blank" rel="noopener">dash.cloudflare.com/sign-up</a>）</li>
+      <li>GitHubアカウント</li>
+      <li>Node.js 20以上</li>
+      <li>Claude Code などのAIコーディングツール（必須ではないが、実装を任せる前提の手順）</li>
+    </ul>
+
+    <h3>Claude Codeに渡すプロンプト</h3>
+    <p>新規プロジェクトのディレクトリで、まずこれを渡して設計方針を出させてから実装に進めるのがおすすめです。</p>
+    <div class="copy-block">
+      <div class="copy-block-head">
+        <span>Claude Code に貼り付ける（構築プロンプト）</span>
+        <button class="copy-btn" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+          <span>コピー</span>
+        </button>
+      </div>
+      <pre class="copy-text">Cloudflare Workers + D1 + MCP（Model Context Protocol, Streamable HTTP）で、
+「プロンプト（スキル）配布用のリモートMCPサーバー」を実装してください。
+
+要件:
+- 複数のプロンプトをサーバー側で一元管理し、内容を更新したら次回呼び出しから
+  全利用者に反映されるようにする
+- 利用者ごとに専用トークンを発行し、そのトークンで使えるプロンプトを制限できるようにする
+- トークンの発行・一覧・失効を行う管理APIを用意する。管理用の認証情報は
+  利用者用トークンとは別名前空間で保護する
+- 誰が・いつ・どのプロンプトを呼んだかをログに記録する
+- MCPクライアント（Claude Code, Cursor, Claude Desktop など）からStreamable HTTPで
+  接続できるようにする。トークンはクエリパラメータとAuthorizationヘッダーの
+  両方に対応させる
+- 未許可のプロンプトはMCPツールとして登録しない設計にする（tools/listにも出ないようにする）
+
+技術スタック: Cloudflare Workers, D1, Hono, @modelcontextprotocol/server（v2, Streamable HTTP）, TypeScript
+
+まず設計方針とファイル構成を提示して、確認を取ってから実装してください。</pre>
+    </div>
+
+    <h3>手順</h3>
+    <ol>
+      <li>上のプロンプトをClaude Codeに渡し、コード一式を実装してもらう</li>
+      <li>
+        Cloudflareにログイン
+        <pre><code>npx wrangler login</code></pre>
+        ブラウザが開くので認証を承認する
+      </li>
+      <li>
+        D1データベースを作成
+        <pre><code>npx wrangler d1 create &lt;データベース名&gt;</code></pre>
+        出力される <code>database_id</code> を <code>wrangler.jsonc</code>（または <code>.toml</code>）に反映する
+      </li>
+      <li>
+        マイグレーションを本番に適用
+        <pre><code>npx wrangler d1 migrations apply &lt;データベース名&gt; --remote</code></pre>
+      </li>
+      <li>
+        管理用トークンをシークレットとして登録
+        <pre><code>npx wrangler secret put ADMIN_TOKEN</code></pre>
+      </li>
+      <li>
+        デプロイ
+        <pre><code>npx wrangler deploy</code></pre>
+        初回は <code>workers.dev</code> サブドメインの登録が必要（ダッシュボードの
+        Workers &amp; Pages 画面、または対象Workerの Domains タブから有効化できる）
+      </li>
+    </ol>
+    <p>
+      ここまでで管理者用の接続URL（<code>/mcp</code>）と管理API（<code>/admin/*</code>）が動く状態になる。
+      あとは管理APIでトークンを発行し、<a href="#usage">クライアント接続手順</a>の形式で配布すればよい。
+    </p>
   </section>
 
   <footer>
