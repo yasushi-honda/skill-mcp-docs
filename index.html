@@ -153,6 +153,30 @@
   .step-card .title { font-weight: 600; margin-bottom: 0.25rem; }
   .step-card .desc { color: var(--text-muted); font-size: 0.92rem; }
 
+  .try-card {
+    border: 1px solid var(--accent); background: var(--accent-soft);
+    border-radius: var(--radius); padding: 1.25rem 1.4rem; margin: 1.5rem 0 0;
+  }
+  .try-card .try-title { font-weight: 700; margin-bottom: 0.35rem; }
+  .try-card .try-desc { color: var(--text-muted); font-size: 0.9rem; margin: 0 0 0.9rem; }
+  .copy-row {
+    display: flex; align-items: stretch; gap: 0.5rem; flex-wrap: wrap;
+  }
+  .copy-row code {
+    flex: 1 1 320px; background: var(--bg); border: 1px solid var(--border);
+    border-radius: 8px; padding: 0.6rem 0.8rem; font-size: 0.8rem;
+    overflow-x: auto; white-space: nowrap; display: block;
+  }
+  .copy-btn {
+    flex: 0 0 auto; display: inline-flex; align-items: center; gap: 0.4rem;
+    background: var(--accent); color: #fff; border: none; border-radius: 8px;
+    padding: 0 1rem; font-size: 0.85rem; font-weight: 600; cursor: pointer;
+    font-family: inherit;
+  }
+  .copy-btn:hover { filter: brightness(1.08); }
+  .copy-btn svg { width: 15px; height: 15px; }
+  .copy-btn.copied { background: #1a9e5c; }
+
   footer {
     margin-top: 4rem; padding-top: 1.5rem; border-top: 1px solid var(--border);
     color: var(--text-muted); font-size: 0.85rem;
@@ -177,6 +201,7 @@
       <span class="stack-badge"><img class="icon-invertable" src="https://cdn.simpleicons.org/modelcontextprotocol" alt=""> Model Context Protocol</span>
     </div>
     <nav class="toc">
+      <a href="#try-it">今すぐ試す</a>
       <a href="#overview">概要</a>
       <a href="#architecture">アーキテクチャ</a>
       <a href="#flow">利用の流れ</a>
@@ -184,6 +209,21 @@
       <a href="#security">セキュリティ設計</a>
       <a href="#ops">運用</a>
     </nav>
+
+    <div class="try-card" id="try-it">
+      <div class="try-title">今すぐ試す</div>
+      <p class="try-desc">
+        誰でも使えるデモ用トークン（「マーケ壁打ち」スキルのみ利用可）。サインアップ不要、下のURLをコピーして
+        <a href="#usage">お使いのクライアントに登録</a>するだけ。
+      </p>
+      <div class="copy-row">
+        <code id="demo-url">https://skill-mcp.spring-band-712b.workers.dev/mcp?token=skm_live_ZmJ9vlWWPQwB_tIJSbHysO3eAZL877KUn4HI9YTNIGQ</code>
+        <button class="copy-btn" id="copy-demo-url" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+          <span>コピー</span>
+        </button>
+      </div>
+    </div>
   </header>
 
   <section id="overview">
@@ -380,6 +420,32 @@ stateDiagram-v2
     startOnLoad: true,
     theme: isDark ? "dark" : "default",
     securityLevel: "strict",
+  });
+</script>
+<script>
+  const copyBtn = document.getElementById("copy-demo-url");
+  const demoUrl = document.getElementById("demo-url");
+  copyBtn.addEventListener("click", async () => {
+    try {
+      await navigator.clipboard.writeText(demoUrl.textContent.trim());
+    } catch {
+      // クリップボードAPIが使えない環境向けのフォールバック
+      const range = document.createRange();
+      range.selectNodeContents(demoUrl);
+      const selection = window.getSelection();
+      selection.removeAllRanges();
+      selection.addRange(range);
+      document.execCommand("copy");
+      selection.removeAllRanges();
+    }
+    const label = copyBtn.querySelector("span");
+    const original = label.textContent;
+    copyBtn.classList.add("copied");
+    label.textContent = "コピーしました";
+    setTimeout(() => {
+      copyBtn.classList.remove("copied");
+      label.textContent = original;
+    }, 1800);
   });
 </script>
 </body>
