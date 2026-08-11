@@ -597,6 +597,14 @@ flowchart LR
       </li>
       <li>デプロイし直す（<code>npx wrangler deploy</code>）。次回の呼び出しから全利用者に反映される</li>
     </ol>
+    <div class="card">
+      <p><strong>良いスキル設計のポイント（実機検証で得た教訓）</strong></p>
+      <p>
+        検証していないスキルを公開デモに残さない。<a href="#ops">安全にテストする方法</a>で動くことを
+        確認したものだけを公開する方が事故が少ない。1つのトークンに複数スキルを持たせることはできるが、
+        公開デモ用途では「検証済みのものだけ」に絞るとトラブルシューティングが楽になる。
+      </p>
+    </div>
     <pre><code>{
   id: "meeting-notes",
   title: "議事録要約",
@@ -686,6 +694,9 @@ id: meeting-notes
       <pre class="copy-text">MCPサーバーを追加してください。名前はskill-mcp、接続方式はHTTP、URLは https://&lt;worker-url&gt;/mcp、認証は Authorization ヘッダーに Bearer &lt;あなたのトークン&gt; を設定してください。</pre>
     </div>
 
+    <p>接続を解除したい場合はいつでも自分の判断で外せます（サーバー側の許可は不要、完全にローカルな操作です）:</p>
+    <pre><code>claude mcp remove skill-mcp</code></pre>
+
     <h3>Cursor</h3>
     <p><code>~/.cursor/mcp.json</code>（全プロジェクト共通）または <code>.cursor/mcp.json</code>（プロジェクト単位）に直接追記する場合:</p>
     <pre><code>{
@@ -771,6 +782,19 @@ stateDiagram-v2
       <a href="#skills">スキルを登録する</a>の手順に戻って追加・更新すればよい。
       デプロイし直すだけで、次回の呼び出しから全利用者に反映される。
     </p>
+
+    <h3>安全にテストする方法</h3>
+    <p>スキルの追加・削除やdescriptionの発動条件変更を試すときは、いきなり本番（公開デモ）に反映しない。</p>
+    <ol>
+      <li>まずローカルの<code>wrangler dev</code>を起動し、テスト用トークンを発行して動作確認する</li>
+      <li>
+        Claude Codeなどの実クライアントで「自然文でツールが呼ばれるか」まで確認したい場合も、接続先は
+        ローカル（<code>http://localhost:8787/mcp</code>）にする。本番URLや共有中のデモトークンには絶対に向けない
+      </li>
+      <li>ローカルで期待通りに動くと確認できてから、初めて<code>npx wrangler deploy</code>で本番に反映する</li>
+      <li>ローカル検証用に登録したMCP接続は、検証が終わったら忘れずに外す（<code>claude mcp remove &lt;name&gt;</code>）</li>
+    </ol>
+    <p>これを徹底すれば、検証中の試行錯誤が公開デモや他の利用者に影響することはない。</p>
 
     <h3>スキルを削除する</h3>
     <div class="card">
@@ -977,6 +1001,27 @@ stateDiagram-v2
               管理者操作で、1つのWorkerに対してグローバルに効くため、共有中のデモに対して行うと他の利用者にも
               即座に影響します。試したい場合は<a href="#build">「構築する」</a>の手順で、無料で自分専用の
               インスタンスを作れます。
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q" type="button" aria-expanded="false">
+          <span class="faq-q-badge" aria-hidden="true">Q</span>
+          <span class="faq-q-text">Hooksのshやコンテキスト用のmdも、このMCP経由でまとめて配れる？</span>
+          <svg class="faq-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+        </button>
+        <div class="faq-a">
+          <div class="faq-a-inner">
+            <p>
+              スキル・コンテキストのmdは配れる（今のスキル配布と全く同じ仕組み。MCPツールが返すテキストを
+              Claudeが読むだけなので、実質スキルの一種として追加できる）。一方Hooksのshは配れない。Hooksは
+              <code>settings.json</code>への登録とローカルにスクリプト実体が存在することが前提で、MCPツールの
+              応答（会話に返るテキストだけ）ではその両方を実現できない。加えて、リモートから届いたシェル
+              スクリプトをローカルで自動実行できる仕組みにするのは信頼性の観点でも別次元の話になる。
+              skills/hooks/MCP/commandsをまとめて配りたい場合は、Claude Code公式のPlugin機構
+              （gitリポジトリ/マーケットプレイス経由の明示的インストール）の方が適している。
             </p>
           </div>
         </div>
