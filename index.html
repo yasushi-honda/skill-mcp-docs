@@ -329,11 +329,11 @@
     <div class="try-card" id="try-it">
       <div class="try-title">今すぐ試す</div>
       <p class="try-desc">
-        誰でも使えるデモ用トークン（「アイデア壁打ち」スキルのみ利用可）。サインアップ不要、下のURLをコピーして
+        誰でも使えるデモ用トークン（「議事録要約」スキルのみ利用可）。サインアップ不要、下のURLをコピーして
         <a href="#usage">お使いのクライアントに登録</a>するだけ。
       </p>
       <div class="copy-row">
-        <code class="copy-text">https://skill-mcp.spring-band-712b.workers.dev/mcp?token=skm_live_K0LbUAogdTv8bwAH3I94Tzm2vw3WYKR1yRMcQ87a5Ow</code>
+        <code class="copy-text">https://skill-mcp.spring-band-712b.workers.dev/mcp?token=skm_live_Y6ZIMg52gXg5VRSDw6S71NhSPzLzLJ-dlAXEOmE9XuM</code>
         <button class="copy-btn" type="button">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
           <span>コピー</span>
@@ -346,7 +346,7 @@
     <h2>概要</h2>
     <p>
       利用者ごとに専用トークン付きのURLを1本発行するだけで、管理者が用意したスキル
-      （アイデア壁打ち・議事録要約・コードレビュー観点 など）をそのまま使わせられます。
+      （議事録要約・コードレビュー観点 など）をそのまま使わせられます。
       社内メンバーへの展開はもちろん、社外のクライアントへの配布にも使える汎用的な仕組みです。
       スキル本文はサーバー側で一元管理しているため、内容を更新すれば次の呼び出しから全員に反映されます。
     </p>
@@ -697,7 +697,7 @@ id: meeting-notes
     <h3>接続後の流れ</h3>
     <p>登録が終われば、あとは普通に話しかけるだけです。</p>
     <div class="card accent">
-      <p>「このアイデアどう思う？壁打ちして」</p>
+      <p>「この議事録まとめて」</p>
       <p>と言えば、対応するスキルのツールが自動的に選ばれ、スキル本文が適用されます。
       何が使えるか分からないときは「使えるスキル一覧を見せて」と言えば一覧が返ります。</p>
     </div>
@@ -710,15 +710,15 @@ sequenceDiagram
   participant W as Worker (/mcp)
   participant D as D1
 
-  U->>C: 「壁打ちして」
+  U->>C: 「この議事録まとめて」
   C->>W: tools/list（Bearer token）
   W->>D: トークン検証
   D-->>W: 有効・許可スキル一覧
   W-->>C: 許可されたツールのみ返す
-  C->>W: tools/call skill_idea_sparring
+  C->>W: tools/call skill_meeting_notes
   W-->>C: スキル本文（プロンプト）
   W->>D: 利用ログを非同期で記録
-  C-->>U: スキルに沿って壁打ち開始
+  C-->>U: スキルに沿って要約開始
       </pre>
     </div>
   </section>
