@@ -182,8 +182,24 @@
   .copy-btn {
     flex: 0 0 auto; display: inline-flex; align-items: center; gap: 0.4rem;
     background: var(--accent); color: #fff; border: none; border-radius: 8px;
-    padding: 0 1rem; font-size: 0.85rem; font-weight: 600; cursor: pointer;
+    height: 2.3rem; padding: 0 1rem; font-size: 0.85rem; font-weight: 600; cursor: pointer;
     font-family: inherit;
+  }
+
+  .copy-block {
+    border: 1px solid var(--border); border-radius: var(--radius);
+    overflow: hidden; margin: 0.75rem 0 1.25rem;
+  }
+  .copy-block-head {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0.5rem 0.5rem 0.5rem 0.9rem; background: var(--bg-subtle);
+    border-bottom: 1px solid var(--border);
+    font-size: 0.78rem; color: var(--text-muted); font-weight: 600;
+  }
+  .copy-block pre.copy-text {
+    margin: 0; padding: 0.9rem 1rem; background: var(--code-bg);
+    border: none; border-radius: 0; font-size: 0.85rem;
+    white-space: pre-wrap; word-break: break-word;
   }
   .copy-btn:hover { filter: brightness(1.08); }
   .copy-btn svg { width: 15px; height: 15px; }
@@ -229,8 +245,8 @@
         <a href="#usage">お使いのクライアントに登録</a>するだけ。
       </p>
       <div class="copy-row">
-        <code id="demo-url">https://skill-mcp.spring-band-712b.workers.dev/mcp?token=skm_live_ZmJ9vlWWPQwB_tIJSbHysO3eAZL877KUn4HI9YTNIGQ</code>
-        <button class="copy-btn" id="copy-demo-url" type="button">
+        <code class="copy-text">https://skill-mcp.spring-band-712b.workers.dev/mcp?token=skm_live_ZmJ9vlWWPQwB_tIJSbHysO3eAZL877KUn4HI9YTNIGQ</code>
+        <button class="copy-btn" type="button">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
           <span>コピー</span>
         </button>
@@ -348,15 +364,32 @@ stateDiagram-v2
 
   <section id="usage">
     <h2>クライアント接続手順</h2>
-    <p>管理者から接続URLを受け取ったら、使っているクライアントに応じて登録します。</p>
+    <p>
+      管理者から接続URLを受け取ったら、使っているクライアントに応じて登録します。
+      Claude Code・Cursor はそれ自体がエージェントとして動くツールなので、コマンドやJSONを
+      自分で書かなくても、下の「自然文で頼む」をコピペしてチャットに貼るだけで設定してくれます。
+    </p>
 
     <h3>Claude Code</h3>
+    <p>コマンドで直接登録する場合:</p>
     <pre><code>claude mcp add --transport http skill-mcp "https://&lt;worker-url&gt;/mcp" \
   --header "Authorization: Bearer &lt;あなたのトークン&gt;"</code></pre>
     <p>登録後 <code>/mcp</code> コマンドで <code>connected</code> になっていれば成功です。</p>
 
+    <p>自然文で頼む場合、Claude Codeのチャットにそのまま貼り付けてください:</p>
+    <div class="copy-block">
+      <div class="copy-block-head">
+        <span>Claude Code に貼り付ける</span>
+        <button class="copy-btn" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+          <span>コピー</span>
+        </button>
+      </div>
+      <pre class="copy-text">MCPサーバーを追加してください。名前はskill-mcp、接続方式はHTTP、URLは https://&lt;worker-url&gt;/mcp、認証は Authorization ヘッダーに Bearer &lt;あなたのトークン&gt; を設定してください。</pre>
+    </div>
+
     <h3>Cursor</h3>
-    <p><code>~/.cursor/mcp.json</code>（全プロジェクト共通）または <code>.cursor/mcp.json</code>（プロジェクト単位）に追記します。</p>
+    <p><code>~/.cursor/mcp.json</code>（全プロジェクト共通）または <code>.cursor/mcp.json</code>（プロジェクト単位）に直接追記する場合:</p>
     <pre><code>{
   "mcpServers": {
     "skill-mcp": {
@@ -367,6 +400,18 @@ stateDiagram-v2
     }
   }
 }</code></pre>
+
+    <p>自然文で頼む場合、Cursorのチャットにそのまま貼り付けてください:</p>
+    <div class="copy-block">
+      <div class="copy-block-head">
+        <span>Cursor に貼り付ける</span>
+        <button class="copy-btn" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+          <span>コピー</span>
+        </button>
+      </div>
+      <pre class="copy-text">~/.cursor/mcp.json にリモートMCPサーバーを追加してください。名前はskill-mcp、URLは https://&lt;worker-url&gt;/mcp、Authorizationヘッダーに Bearer &lt;あなたのトークン&gt; を設定してください。</pre>
+    </div>
 
     <h3>Claude（claude.ai / Claude Desktop）</h3>
     <p>
@@ -435,29 +480,30 @@ stateDiagram-v2
   });
 </script>
 <script>
-  const copyBtn = document.getElementById("copy-demo-url");
-  const demoUrl = document.getElementById("demo-url");
-  copyBtn.addEventListener("click", async () => {
-    try {
-      await navigator.clipboard.writeText(demoUrl.textContent.trim());
-    } catch {
-      // クリップボードAPIが使えない環境向けのフォールバック
-      const range = document.createRange();
-      range.selectNodeContents(demoUrl);
-      const selection = window.getSelection();
-      selection.removeAllRanges();
-      selection.addRange(range);
-      document.execCommand("copy");
-      selection.removeAllRanges();
-    }
-    const label = copyBtn.querySelector("span");
-    const original = label.textContent;
-    copyBtn.classList.add("copied");
-    label.textContent = "コピーしました";
-    setTimeout(() => {
-      copyBtn.classList.remove("copied");
-      label.textContent = original;
-    }, 1800);
+  document.querySelectorAll(".copy-btn").forEach((copyBtn) => {
+    const target = copyBtn.closest(".copy-row, .copy-block").querySelector(".copy-text");
+    copyBtn.addEventListener("click", async () => {
+      try {
+        await navigator.clipboard.writeText(target.textContent.trim());
+      } catch {
+        // クリップボードAPIが使えない環境向けのフォールバック
+        const range = document.createRange();
+        range.selectNodeContents(target);
+        const selection = window.getSelection();
+        selection.removeAllRanges();
+        selection.addRange(range);
+        document.execCommand("copy");
+        selection.removeAllRanges();
+      }
+      const label = copyBtn.querySelector("span");
+      const original = label.textContent;
+      copyBtn.classList.add("copied");
+      label.textContent = "コピーしました";
+      setTimeout(() => {
+        copyBtn.classList.remove("copied");
+        label.textContent = original;
+      }, 1800);
+    });
   });
 </script>
 </body>
