@@ -19,19 +19,6 @@
     --shadow: 0 1px 3px rgba(0,0,0,0.06);
     --radius: 10px;
   }
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --bg: #14161a;
-      --bg-subtle: #1c1f24;
-      --text: #e8eaed;
-      --text-muted: #9aa1a9;
-      --border: #2b2f36;
-      --accent: #6d8dff;
-      --accent-soft: #1e2440;
-      --code-bg: #1c1f24;
-      --shadow: 0 1px 3px rgba(0,0,0,0.4);
-    }
-  }
   * { box-sizing: border-box; }
   body {
     margin: 0;
@@ -65,10 +52,6 @@
     font-size: 0.8rem; color: var(--text-muted);
   }
   .stack-badge img { width: 14px; height: 14px; display: block; opacity: 0.85; }
-  .stack-badge img.icon-invertable { }
-  @media (prefers-color-scheme: dark) {
-    .stack-badge img.icon-invertable { filter: invert(1); }
-  }
 
   a { color: var(--accent); }
   a:hover { text-decoration-color: currentColor; }
@@ -226,7 +209,7 @@
       <span class="stack-badge"><img src="https://cdn.simpleicons.org/cloudflare" alt=""> Cloudflare Workers</span>
       <span class="stack-badge"><img src="https://cdn.simpleicons.org/sqlite" alt=""> D1 (SQLite互換)</span>
       <span class="stack-badge"><img src="https://cdn.simpleicons.org/typescript" alt=""> TypeScript</span>
-      <span class="stack-badge"><img class="icon-invertable" src="https://cdn.simpleicons.org/modelcontextprotocol" alt=""> Model Context Protocol</span>
+      <span class="stack-badge"><img src="https://cdn.simpleicons.org/modelcontextprotocol" alt=""> Model Context Protocol</span>
     </div>
     <nav class="toc">
       <a href="#try-it">今すぐ試す</a>
@@ -257,8 +240,9 @@
   <section id="overview">
     <h2>概要</h2>
     <p>
-      受講生・利用者ごとに専用トークン付きのURLを1本発行するだけで、管理者が用意したスキル
+      利用者ごとに専用トークン付きのURLを1本発行するだけで、管理者が用意したスキル
       （マーケティング壁打ち・入口設計・メルマガ設計 など）をそのまま使わせられます。
+      社内メンバーへの展開はもちろん、社外のクライアントへの配布にも使える汎用的な仕組みです。
       スキル本文はサーバー側で一元管理しているため、内容を更新すれば次の呼び出しから全員に反映されます。
     </p>
     <div class="grid-3">
@@ -447,7 +431,7 @@ stateDiagram-v2
       </tr>
       <tr>
         <td>管理用認証情報</td>
-        <td>受講生用トークンとは別名前空間（ADMIN_TOKEN）で保護。値自体をどこにも保存せず、
+        <td>利用者用トークンとは別名前空間（ADMIN_TOKEN）で保護。値自体をどこにも保存せず、
         パスフレーズから毎回同じ値を計算で導出する運用も可能。</td>
       </tr>
       <tr>
@@ -472,10 +456,9 @@ stateDiagram-v2
 
 <script type="module">
   import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
-  const isDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
   mermaid.initialize({
     startOnLoad: true,
-    theme: isDark ? "dark" : "default",
+    theme: "default",
     securityLevel: "strict",
   });
 </script>
