@@ -381,13 +381,13 @@ flowchart LR
     CU["Cursor"]
   end
 
-  subgraph worker["Cloudflare Workers"]
+  subgraph worker["Cloudflare Workers（1つのプロジェクトとしてデプロイ）"]
     MCP["/mcp（Streamable HTTP）"]
     ADMIN["/admin/*（管理API）"]
+    SKILLS[["src/skills/*.md\n（スキル本文。コードの一部としてバンドル）"]]
   end
 
-  D1[("D1\ntokens / usage_logs")]
-  SKILLS[["src/skills/*.md\n（スキル本文）"]]
+  D1[("D1（外部ストレージ）\ntokens / usage_logs")]
   OPERATOR(["管理者"])
 
   CC -- "token" --> MCP
@@ -397,6 +397,7 @@ flowchart LR
   MCP -- "本文読込" --> SKILLS
   OPERATOR -- "ADMIN_TOKEN" --> ADMIN
   ADMIN -- "発行・失効・一覧" --> D1
+  OPERATOR -. "スキルをコードに追加して再デプロイ" .-> worker
       </pre>
     </div>
     <p>
@@ -483,8 +484,15 @@ flowchart LR
     </ol>
     <p>
       ここまでで管理者用の接続URL（<code>/mcp</code>）と管理API（<code>/admin/*</code>）が動く状態になる。
-      次はここに配りたいスキルを登録する。
+      ただしこの時点ではスキルはまだ1つも登録されていない。
     </p>
+    <div class="card">
+      <p>
+        <strong>次のステップは、別の場所やCloudflareの管理画面ではなく、今Claude Codeが作ったこの同じプロジェクトの中で行う。</strong>
+        スキルはデータベースや別サービスに「登録」するものではなく、プロジェクトのソースコードにファイルとして
+        書き加え、コードごと再デプロイすることで反映される仕組みになっている。
+      </p>
+    </div>
   </section>
 
   <section id="skills">
@@ -492,6 +500,12 @@ flowchart LR
       <span class="step-badge">2</span>
       <h2>スキルを登録する</h2>
     </div>
+    <p>
+      ここでの作業場所は<a href="#build">先ほど構築した同じプロジェクトのディレクトリ</a>。
+      Cloudflareの管理画面や別のサービスに切り替える必要はない。スキルの実体はソースコード内の
+      ファイルであり、コードごと再デプロイすることで初めて反映される
+      （D1のような外部ストレージではなく、Workers自体にバンドルされる。<a href="#architecture">アーキテクチャ図</a>を参照）。
+    </p>
     <p>
       「1スキル = 本文ファイル1つ + 一覧への登録1件」という構成にしておくと管理しやすい。
       本文はプレーンテキスト（Markdownなど）、一覧はそれを読み込んで
