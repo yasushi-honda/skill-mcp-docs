@@ -331,6 +331,7 @@
       <p class="try-desc">
         誰でも使えるデモ用トークン（「議事録要約」スキルのみ利用可）。サインアップ不要、下のURLをコピーして
         <a href="#usage">お使いのクライアントに登録</a>するだけ。
+        追加・削除はこの公開デモではできません（管理者だけができる操作です。試したい方は下の「構築する」へ）。
       </p>
       <div class="copy-row">
         <code class="copy-text">https://skill-mcp.spring-band-712b.workers.dev/mcp?token=skm_live_Y6ZIMg52gXg5VRSDw6S71NhSPzLzLJ-dlAXEOmE9XuM</code>
@@ -372,6 +373,18 @@
         <div class="title">記録</div>
         <div class="desc">誰が・いつ・どのスキルを使ったかをログに記録。</div>
       </div>
+    </div>
+
+    <div class="card accent">
+      <p><strong>このページで登場する2つの役割</strong></p>
+      <p>
+        <strong>管理者（あなた）</strong>: Cloudflareに自分のインスタンスをデプロイし、スキルの追加・削除・トークン発行を行う人。<br>
+        <strong>利用者（配布先）</strong>: 受け取ったURLで、許可されたスキルを使うだけの人。追加・削除はできない。
+      </p>
+      <p>
+        以下の「今すぐ試す」は利用者体験のみです。追加・削除まで試したい場合は、下の「構築する」で
+        自分専用の無料インスタンスを作ってください。
+      </p>
     </div>
 
     <h3>全体の流れ</h3>
@@ -443,6 +456,10 @@ flowchart LR
   OPERATOR -. "スキルをコードに追加して再デプロイ" .-> worker
       </pre>
     </div>
+    <p>
+      図の通り、利用者（クライアント）は <code>/mcp</code> を呼び出すだけの一方向。スキルの追加・削除ができるのは
+      <code>OPERATOR</code>（ソースを書き換えて再デプロイする人）だけの非対称な設計です。
+    </p>
     <p>
       未許可のスキルは MCP ツールとして登録されないため、
       <code>tools/list</code> にすら現れません。実行時の権限チェック漏れが構造的に起きない設計です。
@@ -545,6 +562,13 @@ flowchart LR
     <div class="step-heading">
       <span class="step-badge">2</span>
       <h2>スキルを登録する</h2>
+    </div>
+    <div class="card">
+      <p>
+        ここから先は管理者操作です。自分専用にデプロイしたWorkerで行ってください
+        （上の「今すぐ試す」の公開URLのような、他の人と共有中のインスタンスに対して行うと、
+        その瞬間から全利用者に影響します）。
+      </p>
     </div>
     <p>
       ここでの作業場所は<a href="#build">先ほど構築した同じプロジェクトのディレクトリ</a>。
@@ -749,6 +773,13 @@ stateDiagram-v2
     </p>
 
     <h3>スキルを削除する</h3>
+    <div class="card">
+      <p>
+        ここから先は管理者操作です。自分専用にデプロイしたWorkerで行ってください
+        （上の「今すぐ試す」の公開URLのような、他の人と共有中のインスタンスに対して行うと、
+        その瞬間から全利用者に影響します）。
+      </p>
+    </div>
     <ol>
       <li><a href="#skills">スキルを登録する</a>で追加した本文ファイルと、一覧の設定ファイルからそのスキルのエントリを削除する</li>
       <li>デプロイし直す（<code>npx wrangler deploy</code>）</li>
@@ -928,6 +959,24 @@ stateDiagram-v2
               含んでいた既存トークンは、トークンを発行し直さなくても再デプロイ後に自動で再び使えるようになる
               （許可判定は常に現在のスキル一覧との突き合わせで行われるため）。別の<code>id</code>で登録し直す場合は、
               <code>["*"]</code>許可のトークン以外は改めて許可スキルを指定してトークンを発行し直す必要がある。
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q" type="button" aria-expanded="false">
+          <span class="faq-q-badge" aria-hidden="true">Q</span>
+          <span class="faq-q-text">公開デモURLで、追加や削除まで試せますか？</span>
+          <svg class="faq-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+        </button>
+        <div class="faq-a">
+          <div class="faq-a-inner">
+            <p>
+              できません。デモURLは「使う」体験専用です。追加・削除はソースコード変更 + 再デプロイという
+              管理者操作で、1つのWorkerに対してグローバルに効くため、共有中のデモに対して行うと他の利用者にも
+              即座に影響します。試したい場合は<a href="#build">「構築する」</a>の手順で、無料で自分専用の
+              インスタンスを作れます。
             </p>
           </div>
         </div>
