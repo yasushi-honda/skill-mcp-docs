@@ -444,9 +444,63 @@ stateDiagram-v2
 
   <section id="ops">
     <h2>運用</h2>
-    <p>スキル本文はサーバー側の1ファイルとして管理しており、内容を更新して再デプロイするだけで
-    次回呼び出しから全利用者に反映されます。個別のクライアント側の再設定は不要です。</p>
-    <p>トークンの発行・一覧・失効は管理API経由でコマンド一つで行えます。利用状況もいつでも確認できます。</p>
+
+    <h3>配布したいスキルを追加する</h3>
+    <p>
+      「1スキル = 本文ファイル1つ + 一覧への登録1件」という構成にしておくと管理しやすい。
+      本文はプレーンテキスト（Markdownなど）、一覧はそれを読み込んで
+      <code>id</code> / <code>title</code> / <code>description</code> / 本文 を紐づける設定ファイルにする。
+    </p>
+    <ol>
+      <li>スキルの本文（プロンプト）をテキストファイルとして書く（例: <code>skills/entry-design.md</code>）</li>
+      <li>一覧の設定ファイルに、そのスキルの情報を1件追加する（下記イメージ参照）</li>
+      <li>
+        <code>description</code> には、利用者がどう話しかけそうかを日本語で具体的に書く。
+        ここがクライアント側AIのツール選択精度を左右する
+        （例:「入口設計を手伝って」「LPの導線を考えたい」といった発話例を含める）
+      </li>
+      <li>デプロイし直す（<code>npx wrangler deploy</code>）。次回の呼び出しから全利用者に反映される</li>
+    </ol>
+    <pre><code>{
+  id: "entry-design",
+  title: "入口設計",
+  description:
+    "集客導線や初回オファーの設計相談で使う。" +
+    "「入口設計を手伝って」「LPの導線を考えたい」といった相談で呼び出す。",
+  body: (本文ファイルの中身),
+}</code></pre>
+
+    <p>実装をClaude Codeなどに任せている場合は、コマンドを自分で書かず次のように頼むだけでよい:</p>
+    <div class="copy-block">
+      <div class="copy-block-head">
+        <span>Claude Code に貼り付ける（スキル追加）</span>
+        <button class="copy-btn" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+          <span>コピー</span>
+        </button>
+      </div>
+      <pre class="copy-text">新しいスキルを1つ追加してください。
+
+id: entry-design
+タイトル: 入口設計
+発動条件（description）: 集客導線や初回オファーの設計相談で使うスキル。「入口設計を手伝って」「LPの導線を考えたい」
+といった相談で呼び出されるようにする。
+本文: 以下のプロンプトをそのまま使う
+
+---
+（ここに実際のプロンプト本文を貼る）
+---
+
+追加したらデプロイまで行ってください。</pre>
+    </div>
+
+    <p>
+      追加しただけでは全員が使えるわけではない。<a href="#security">未許可のスキルはツールとして登録されない</a>ため、
+      トークン発行時に許可スキルとして指定した利用者だけが実際に使える。
+    </p>
+
+    <h3>トークンの発行・失効・利用状況の確認</h3>
+    <p>トークンの発行・一覧・失効は管理API経由でコマンド一つで行える。利用状況もいつでも確認できる。</p>
   </section>
 
   <section id="build">
