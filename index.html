@@ -249,6 +249,48 @@
   .copy-btn svg { width: 15px; height: 15px; }
   .copy-btn.copied { background: #1a9e5c; }
 
+  .faq-list {
+    display: flex; flex-direction: column; gap: var(--space-1);
+    margin: 1.25rem 0 0;
+  }
+  .faq-item {
+    border: 1px solid var(--border); border-radius: var(--radius);
+    background: var(--bg); overflow: hidden;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+  .faq-item.open { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+  .faq-q {
+    all: unset;
+    box-sizing: border-box;
+    display: flex; align-items: center; gap: 0.85rem;
+    width: 100%; min-height: 44px;
+    padding: 0.9rem 1.1rem;
+    cursor: pointer;
+    font-family: inherit; color: var(--text);
+  }
+  .faq-q:hover { background: var(--bg-subtle); }
+  .faq-q:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+  .faq-q-badge {
+    flex: 0 0 auto; width: 1.6rem; height: 1.6rem;
+    border-radius: 999px; background: var(--accent-soft); color: var(--accent);
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 0.7rem;
+  }
+  .faq-q-text { flex: 1 1 auto; font-weight: 600; font-size: 0.95rem; line-height: 1.4; }
+  .faq-icon {
+    flex: 0 0 auto; width: 1.1rem; height: 1.1rem; color: var(--text-muted);
+    transition: transform 0.25s ease, color 0.2s ease;
+  }
+  .faq-item.open .faq-icon { transform: rotate(180deg); color: var(--accent); }
+  .faq-a { display: grid; grid-template-rows: 0fr; transition: grid-template-rows 0.3s ease; }
+  .faq-item.open .faq-a { grid-template-rows: 1fr; }
+  .faq-a-inner { overflow: hidden; }
+  .faq-a-inner p {
+    margin: 0; padding: 0 1.1rem 1rem calc(1.6rem + 0.85rem);
+    color: var(--text-muted); font-size: 0.92rem;
+  }
+  .faq-a-inner p code { font-size: 0.85em; }
+
   footer {
     margin-top: 4rem; padding-top: 1.5rem; border-top: 1px solid var(--border);
     color: var(--text-muted); font-size: 0.85rem;
@@ -741,41 +783,114 @@ stateDiagram-v2
 
   <section id="faq">
     <h2>FAQ</h2>
+    <p>運用でよく聞かれる質問をまとめました。質問をクリックすると回答が開きます。</p>
 
-    <h3>Q. 利用者から「接続できない/401になる」と連絡があった</h3>
-    <p>トークンが失効(revoked)・期限切れになっていないか、URLやヘッダーのトークンを打ち間違えていないかを管理APIの一覧で確認する。</p>
+    <div class="faq-list">
+      <div class="faq-item">
+        <button class="faq-q" type="button" aria-expanded="false">
+          <span class="faq-q-badge" aria-hidden="true">Q</span>
+          <span class="faq-q-text">利用者から「接続できない/401になる」と連絡があった</span>
+          <svg class="faq-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+        </button>
+        <div class="faq-a">
+          <div class="faq-a-inner">
+            <p>トークンが失効(revoked)・期限切れになっていないか、URLやヘッダーのトークンを打ち間違えていないかを管理APIの一覧で確認する。</p>
+          </div>
+        </div>
+      </div>
 
-    <h3>Q. 特定のスキルが利用者側の一覧に出てこない</h3>
-    <p>
-      そのトークンの許可スキル（<code>allowed_skills</code>）に対象スキルの<code>id</code>が含まれているか確認する。
-      含まれていなければ、許可範囲を含めてトークンを発行し直す必要がある。
-    </p>
+      <div class="faq-item">
+        <button class="faq-q" type="button" aria-expanded="false">
+          <span class="faq-q-badge" aria-hidden="true">Q</span>
+          <span class="faq-q-text">特定のスキルが利用者側の一覧に出てこない</span>
+          <svg class="faq-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+        </button>
+        <div class="faq-a">
+          <div class="faq-a-inner">
+            <p>
+              そのトークンの許可スキル（<code>allowed_skills</code>）に対象スキルの<code>id</code>が含まれているか確認する。
+              含まれていなければ、許可範囲を含めてトークンを発行し直す必要がある。
+            </p>
+          </div>
+        </div>
+      </div>
 
-    <h3>Q. スキル本文を編集したのに反映されない</h3>
-    <p>
-      ステートレス設計のため、デプロイが完了すれば次のリクエストから即反映される。反映されない場合は
-      デプロイ自体が失敗していないか、クライアント側がツール一覧をキャッシュしていないか
-      （MCPクライアントを再接続すると解消することが多い）を確認する。
-    </p>
+      <div class="faq-item">
+        <button class="faq-q" type="button" aria-expanded="false">
+          <span class="faq-q-badge" aria-hidden="true">Q</span>
+          <span class="faq-q-text">スキル本文を編集したのに反映されない</span>
+          <svg class="faq-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+        </button>
+        <div class="faq-a">
+          <div class="faq-a-inner">
+            <p>
+              ステートレス設計のため、デプロイが完了すれば次のリクエストから即反映される。反映されない場合は
+              デプロイ自体が失敗していないか、クライアント側がツール一覧をキャッシュしていないか
+              （MCPクライアントを再接続すると解消することが多い）を確認する。
+            </p>
+          </div>
+        </div>
+      </div>
 
-    <h3>Q. 利用者一人だけアクセスを止めたい</h3>
-    <p>その利用者に発行したトークンだけを管理APIで失効する。他の利用者のトークンには影響しない。</p>
+      <div class="faq-item">
+        <button class="faq-q" type="button" aria-expanded="false">
+          <span class="faq-q-badge" aria-hidden="true">Q</span>
+          <span class="faq-q-text">利用者一人だけアクセスを止めたい</span>
+          <svg class="faq-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+        </button>
+        <div class="faq-a">
+          <div class="faq-a-inner">
+            <p>その利用者に発行したトークンだけを管理APIで失効する。他の利用者のトークンには影響しない。</p>
+          </div>
+        </div>
+      </div>
 
-    <h3>Q. 誰が・いつ・どのスキルを使ったか知りたい</h3>
-    <p>利用ログ（<code>usage_logs</code>）に、トークン単位・スキル単位で呼び出し履歴が記録されている。管理APIから確認できる。</p>
+      <div class="faq-item">
+        <button class="faq-q" type="button" aria-expanded="false">
+          <span class="faq-q-badge" aria-hidden="true">Q</span>
+          <span class="faq-q-text">誰が・いつ・どのスキルを使ったか知りたい</span>
+          <svg class="faq-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+        </button>
+        <div class="faq-a">
+          <div class="faq-a-inner">
+            <p>利用ログ（<code>usage_logs</code>）に、トークン単位・スキル単位で呼び出し履歴が記録されている。管理APIから確認できる。</p>
+          </div>
+        </div>
+      </div>
 
-    <h3>Q. 管理用の認証情報（ADMIN_TOKEN）を忘れた</h3>
-    <p>
-      乱数で発行して保管する運用のほか、パスフレーズから毎回同じ値を計算で導出する運用にもできる。
-      後者であれば、同じパスフレーズを入力し直すだけで再現でき、忘れた場合も新しいパスフレーズで再導出して
-      差し替えればよい（発行済みの利用者用トークンには影響しない）。
-    </p>
+      <div class="faq-item">
+        <button class="faq-q" type="button" aria-expanded="false">
+          <span class="faq-q-badge" aria-hidden="true">Q</span>
+          <span class="faq-q-text">管理用の認証情報（ADMIN_TOKEN）を忘れた</span>
+          <svg class="faq-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+        </button>
+        <div class="faq-a">
+          <div class="faq-a-inner">
+            <p>
+              乱数で発行して保管する運用のほか、パスフレーズから毎回同じ値を計算で導出する運用にもできる。
+              後者であれば、同じパスフレーズを入力し直すだけで再現でき、忘れた場合も新しいパスフレーズで再導出して
+              差し替えればよい（発行済みの利用者用トークンには影響しない）。
+            </p>
+          </div>
+        </div>
+      </div>
 
-    <h3>Q. スキルを追加/削除したら、配布済みのURLは変わる？</h3>
-    <p>
-      変わらない。トークンとスキルは別管理（トークンは許可スキルidの一覧を持つだけ）のため、
-      スキルの追加・削除・本文更新をしても配布済みのURL・トークンはそのまま使い続けられる。
-    </p>
+      <div class="faq-item">
+        <button class="faq-q" type="button" aria-expanded="false">
+          <span class="faq-q-badge" aria-hidden="true">Q</span>
+          <span class="faq-q-text">スキルを追加/削除したら、配布済みのURLは変わる？</span>
+          <svg class="faq-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+        </button>
+        <div class="faq-a">
+          <div class="faq-a-inner">
+            <p>
+              変わらない。トークンとスキルは別管理（トークンは許可スキルidの一覧を持つだけ）のため、
+              スキルの追加・削除・本文更新をしても配布済みのURL・トークンはそのまま使い続けられる。
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
   </section>
 
   <footer>
@@ -816,6 +931,14 @@ stateDiagram-v2
         copyBtn.classList.remove("copied");
         label.textContent = original;
       }, 1800);
+    });
+  });
+
+  document.querySelectorAll(".faq-item").forEach((item) => {
+    const trigger = item.querySelector(".faq-q");
+    trigger.addEventListener("click", () => {
+      const isOpen = item.classList.toggle("open");
+      trigger.setAttribute("aria-expanded", String(isOpen));
     });
   });
 </script>
