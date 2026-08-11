@@ -57,16 +57,14 @@
   header.hero p.lead { color: var(--text-muted); font-size: 1.05rem; max-width: 60ch; margin: 0; }
 
   .stack-badges {
-    display: flex; flex-wrap: wrap; gap: 0.6rem;
-    margin-top: 1.5rem;
+    display: flex; flex-wrap: wrap; gap: 0.4rem 1.1rem;
+    margin-top: 1.4rem;
   }
   .stack-badge {
-    display: inline-flex; align-items: center; gap: 0.45rem;
-    border: 1px solid var(--border); background: var(--bg);
-    border-radius: 999px; padding: 0.35rem 0.8rem 0.35rem 0.6rem;
-    font-size: 0.82rem; color: var(--text-muted); box-shadow: var(--shadow);
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    font-size: 0.8rem; color: var(--text-muted);
   }
-  .stack-badge img { width: 16px; height: 16px; display: block; }
+  .stack-badge img { width: 14px; height: 14px; display: block; opacity: 0.85; }
   .stack-badge img.icon-invertable { }
   @media (prefers-color-scheme: dark) {
     .stack-badge img.icon-invertable { filter: invert(1); }
@@ -76,23 +74,22 @@
   a:hover { text-decoration-color: currentColor; }
 
   nav.toc {
-    display: flex; flex-wrap: wrap; gap: 0.5rem;
-    margin-top: 1.5rem; font-size: 0.85rem;
+    display: flex; flex-wrap: wrap;
+    margin-top: 2rem;
+    padding: 0.35rem 0;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    font-size: 0.88rem;
   }
   nav.toc a {
-    color: var(--text);
-    text-decoration: none;
-    border: 1px solid var(--border);
-    background: var(--bg);
-    padding: 0.4rem 0.9rem;
-    border-radius: 999px;
-    transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
-  }
-  nav.toc a:hover {
     color: var(--accent);
-    border-color: var(--accent);
-    background: var(--accent-soft);
+    font-weight: 600;
+    text-decoration: none;
+    padding: 0.55rem 0.9rem;
+    border-radius: 6px;
+    transition: background 0.15s ease;
   }
+  nav.toc a:hover { background: var(--accent-soft); }
 
   section { margin-bottom: 3rem; scroll-margin-top: 1.5rem; }
   h2 {
