@@ -479,7 +479,10 @@ flowchart LR
         デプロイ
         <pre><code>npx wrangler deploy</code></pre>
         初回は <code>workers.dev</code> サブドメインの登録が必要（ダッシュボードの
-        Workers &amp; Pages 画面、または対象Workerの Domains タブから有効化できる）
+        Workers &amp; Pages 画面、または対象Workerの Domains タブから有効化できる）。
+        成功すると <code>https://skill-mcp.xxxxx.workers.dev</code> のようなURLが表示される。
+        これが以降の説明で <code>&lt;worker-url&gt;</code> と書いている部分の実体（このページの
+        <a href="#try-it">今すぐ試す</a>で使っているURLも、同じ仕組みで得られたもの）。
       </li>
     </ol>
     <p>
@@ -570,6 +573,26 @@ id: entry-design
       利用者は使っているクライアントに応じて、そのURLを登録するだけでよい。
       Claude Code・Cursor はそれ自体がエージェントとして動くツールなので、コマンドやJSONを
       自分で書かなくても、下の「自然文で頼む」をコピペしてチャットに貼るだけで設定してくれる。
+    </p>
+
+    <h3>トークンを発行する</h3>
+    <p>
+      まず管理者が、<a href="#build">構築するで</a>デプロイしたWorker（<code>&lt;worker-url&gt;</code>）に対して管理APIを呼び、
+      利用者用のトークンを1つ発行する。エンドポイントの形は実装によって多少異なるが、典型的には次のようになる:
+    </p>
+    <pre><code>curl -X POST https://&lt;worker-url&gt;/admin/tokens \
+  -H "Authorization: Bearer &lt;ADMIN_TOKEN&gt;" \
+  -d '{"allowed_skills": ["entry-design"]}'
+
+# レスポンス例
+# { "token": "skm_live_xxxxxxxxxxxx", ... }</code></pre>
+    <p>
+      <code>ADMIN_TOKEN</code> は<a href="#build">構築するのデプロイ手順</a>で <code>wrangler secret put</code> により
+      Worker自身に設定した、管理者だけが知っている値。レスポンスに含まれる <code>token</code> の値が、
+      以降このページで <code>&lt;あなたのトークン&gt;</code> と書いている部分の実体になる。
+      <code>&lt;worker-url&gt;</code> と組み合わせた
+      <code>https://&lt;worker-url&gt;/mcp?token=&lt;あなたのトークン&gt;</code> という1本のURLを、
+      これから配布する利用者に渡す。
     </p>
 
     <h3>Claude Code</h3>
