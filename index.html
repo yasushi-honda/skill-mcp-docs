@@ -907,6 +907,25 @@ stateDiagram-v2
           </div>
         </div>
       </div>
+
+      <div class="faq-item">
+        <button class="faq-q" type="button" aria-expanded="false">
+          <span class="faq-q-badge" aria-hidden="true">Q</span>
+          <span class="faq-q-text">一度削除したスキルを、また同じように使える状態に戻せる？</span>
+          <svg class="faq-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+        </button>
+        <div class="faq-a">
+          <div class="faq-a-inner">
+            <p>
+              できる。<a href="#skills">スキルを登録する</a>の手順で本文ファイルと設定ファイルのエントリを作り直し、
+              再デプロイすればよい。<strong>削除前と同じ<code>id</code>で再登録した場合</strong>、そのidを許可スキルに
+              含んでいた既存トークンは、トークンを発行し直さなくても再デプロイ後に自動で再び使えるようになる
+              （許可判定は常に現在のスキル一覧との突き合わせで行われるため）。別の<code>id</code>で登録し直す場合は、
+              <code>["*"]</code>許可のトークン以外は改めて許可スキルを指定してトークンを発行し直す必要がある。
+            </p>
+          </div>
+        </div>
+      </div>
     </div>
   </section>
 
