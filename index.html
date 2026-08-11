@@ -346,7 +346,7 @@
     <h2>概要</h2>
     <p>
       利用者ごとに専用トークン付きのURLを1本発行するだけで、管理者が用意したスキル
-      （マーケティング壁打ち・入口設計・メルマガ設計 など）をそのまま使わせられます。
+      （アイデア壁打ち・議事録要約・コードレビュー観点 など）をそのまま使わせられます。
       社内メンバーへの展開はもちろん、社外のクライアントへの配布にも使える汎用的な仕組みです。
       スキル本文はサーバー側で一元管理しているため、内容を更新すれば次の呼び出しから全員に反映されます。
     </p>
@@ -558,21 +558,21 @@ flowchart LR
       <code>id</code> / <code>title</code> / <code>description</code> / 本文 を紐づける設定ファイルにする。
     </p>
     <ol>
-      <li>スキルの本文（プロンプト）をテキストファイルとして書く（例: <code>skills/entry-design.md</code>）</li>
+      <li>スキルの本文（プロンプト）をテキストファイルとして書く（例: <code>skills/meeting-notes.md</code>）</li>
       <li>一覧の設定ファイルに、そのスキルの情報を1件追加する（下記イメージ参照）</li>
       <li>
         <code>description</code> には、利用者がどう話しかけそうかを日本語で具体的に書く。
         ここがクライアント側AIのツール選択精度を左右する
-        （例:「入口設計を手伝って」「LPの導線を考えたい」といった発話例を含める）
+        （例:「この議事録まとめて」「ネクストアクション出して」といった発話例を含める）
       </li>
       <li>デプロイし直す（<code>npx wrangler deploy</code>）。次回の呼び出しから全利用者に反映される</li>
     </ol>
     <pre><code>{
-  id: "entry-design",
-  title: "入口設計",
+  id: "meeting-notes",
+  title: "議事録要約",
   description:
-    "集客導線や初回オファーの設計相談で使う。" +
-    "「入口設計を手伝って」「LPの導線を考えたい」といった相談で呼び出す。",
+    "会議のメモや録音の書き起こしから要点整理をしたいときに使う。" +
+    "「この議事録まとめて」「ネクストアクション出して」といった相談で呼び出す。",
   body: (本文ファイルの中身),
 }</code></pre>
 
@@ -587,10 +587,10 @@ flowchart LR
       </div>
       <pre class="copy-text">新しいスキルを1つ追加してください。
 
-id: entry-design
-タイトル: 入口設計
-発動条件（description）: 集客導線や初回オファーの設計相談で使うスキル。「入口設計を手伝って」「LPの導線を考えたい」
-といった相談で呼び出されるようにする。
+id: meeting-notes
+タイトル: 議事録要約
+発動条件（description）: 会議のメモや録音の書き起こしから要点整理をしたいときに使うスキル。「この議事録まとめて」
+「ネクストアクション出して」といった相談で呼び出されるようにする。
 本文: 以下のプロンプトをそのまま使う
 
 ---
@@ -625,7 +625,7 @@ id: entry-design
     </p>
     <pre><code>curl -X POST https://&lt;worker-url&gt;/admin/tokens \
   -H "Authorization: Bearer &lt;ADMIN_TOKEN&gt;" \
-  -d '{"allowed_skills": ["entry-design"]}'
+  -d '{"allowed_skills": ["meeting-notes"]}'
 
 # レスポンス例
 # { "token": "skm_live_xxxxxxxxxxxx", ... }</code></pre>
@@ -759,7 +759,7 @@ stateDiagram-v2
       </div>
       <pre class="copy-text">スキルを1つ削除してください。
 
-対象: entry-design（入口設計）
+対象: meeting-notes（議事録要約）
 
 本文ファイルと一覧の設定ファイルの両方からこのスキルのエントリを削除し、
 デプロイまで行ってください。</pre>
