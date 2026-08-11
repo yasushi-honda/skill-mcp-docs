@@ -464,6 +464,39 @@ flowchart LR
       未許可のスキルは MCP ツールとして登録されないため、
       <code>tools/list</code> にすら現れません。実行時の権限チェック漏れが構造的に起きない設計です。
     </p>
+
+    <h3>参考: 自動反映の仕組み（いつ反映されるか）</h3>
+    <p>
+      ステートレス設計のため反映は2段階に分かれます。<strong>サーバー側は常に最新</strong>ですが、
+      <strong>クライアント側のツール一覧だけキャッシュされる</strong>ことがあります。
+    </p>
+    <div class="diagram">
+      <pre class="mermaid">
+sequenceDiagram
+  actor OP as 管理者
+  participant W as Worker（/mcp）
+  participant A as 接続済みクライアント（再接続前）
+  participant B as 新規/再接続クライアント
+
+  OP->>W: スキルを編集して wrangler deploy
+  Note over W: リクエストのたびに毎回組み立て直す(ステートレス)ため<br/>この時点で反映は完了している
+  A->>W: 既存ツールを呼び出す（tools/call）
+  W-->>A: 常に最新の本文を返す
+  Note over A: tools/list は未再取得のまま<br/>（追加・削除したツールはまだ見えない）
+  B->>W: 接続して tools/list
+  W-->>B: 最新のツール一覧を返す
+      </pre>
+    </div>
+    <table>
+      <tr><th>変更内容</th><th>反映タイミング</th></tr>
+      <tr><td>スキル本文の編集</td><td>デプロイ完了後、次のツール呼び出しから即反映</td></tr>
+      <tr><td>スキルの追加・削除</td><td>デプロイ完了後、次の<code>tools/list</code>取得から反映。接続済みクライアントは再接続が必要な場合がある</td></tr>
+      <tr><td>トークンの許可スキル変更・失効</td><td>管理API操作の直後から即反映（デプロイ不要）</td></tr>
+    </table>
+    <p>
+      「編集したのに反映されない」と感じたら、まずデプロイが成功しているかを確認し、次にMCP接続を
+      再接続する（<code>claude mcp remove</code> → <code>claude mcp add</code>、または新しい会話セッションを開始）とよい。
+    </p>
   </section>
 
   <section id="build">
