@@ -1,0 +1,350 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>skill-mcp — スキル配布用リモートMCPサーバー</title>
+<meta name="description" content="Claude / Claude Code / Cursor に本人専用URLを1本渡すだけでスキルを配布するMCPサーバーのマニュアル">
+<style>
+  :root {
+    --bg: #ffffff;
+    --bg-subtle: #f6f7f9;
+    --text: #1a1d21;
+    --text-muted: #5a6169;
+    --border: #e3e6e9;
+    --accent: #3660f4;
+    --accent-soft: #eef1ff;
+    --code-bg: #f2f4f7;
+    --shadow: 0 1px 3px rgba(0,0,0,0.06);
+    --radius: 10px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #14161a;
+      --bg-subtle: #1c1f24;
+      --text: #e8eaed;
+      --text-muted: #9aa1a9;
+      --border: #2b2f36;
+      --accent: #6d8dff;
+      --accent-soft: #1e2440;
+      --code-bg: #1c1f24;
+      --shadow: 0 1px 3px rgba(0,0,0,0.4);
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic UI", "Segoe UI", sans-serif;
+    line-height: 1.75;
+  }
+  .wrap { max-width: 880px; margin: 0 auto; padding: 3rem 1.5rem 6rem; }
+  header.hero {
+    padding: 3.5rem 0 2.5rem;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 2.5rem;
+  }
+  header.hero .eyebrow {
+    color: var(--accent);
+    font-weight: 600;
+    font-size: 0.85rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  header.hero h1 { font-size: 2rem; margin: 0.5rem 0 0.75rem; letter-spacing: -0.01em; }
+  header.hero p.lead { color: var(--text-muted); font-size: 1.05rem; max-width: 60ch; margin: 0; }
+  nav.toc {
+    display: flex; flex-wrap: wrap; gap: 0.5rem 1.25rem;
+    margin-top: 1.5rem; font-size: 0.9rem;
+  }
+  nav.toc a { color: var(--text-muted); text-decoration: none; }
+  nav.toc a:hover { color: var(--accent); }
+
+  section { margin-bottom: 3rem; scroll-margin-top: 1.5rem; }
+  h2 {
+    font-size: 1.35rem; margin: 0 0 1rem;
+    padding-bottom: 0.6rem; border-bottom: 1px solid var(--border);
+  }
+  h3 { font-size: 1.05rem; margin: 1.75rem 0 0.75rem; }
+  p { margin: 0.75rem 0; }
+  ul, ol { padding-left: 1.4rem; }
+  li { margin: 0.35rem 0; }
+
+  code {
+    font-family: "SF Mono", ui-monospace, Menlo, Consolas, monospace;
+    font-size: 0.85em;
+    background: var(--code-bg);
+    padding: 0.15em 0.4em;
+    border-radius: 4px;
+  }
+  pre {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1rem 1.1rem;
+    overflow-x: auto;
+    font-size: 0.85rem;
+  }
+  pre code { background: none; padding: 0; }
+
+  table {
+    width: 100%; border-collapse: collapse; font-size: 0.92rem;
+    background: var(--bg); border-radius: var(--radius); overflow: hidden;
+    border: 1px solid var(--border);
+  }
+  th, td { text-align: left; padding: 0.6rem 0.8rem; border-bottom: 1px solid var(--border); }
+  th { background: var(--bg-subtle); font-weight: 600; }
+  tr:last-child td { border-bottom: none; }
+
+  .card {
+    background: var(--bg-subtle);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.1rem 1.3rem;
+    margin: 1rem 0;
+  }
+  .card.accent { border-color: var(--accent); background: var(--accent-soft); }
+  .card p:first-child { margin-top: 0; }
+  .card p:last-child { margin-bottom: 0; }
+
+  .diagram {
+    background: var(--bg-subtle);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.25rem;
+    overflow-x: auto;
+    margin: 1.25rem 0;
+  }
+  .diagram .mermaid { display: flex; justify-content: center; }
+
+  .grid-3 {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1rem; margin: 1.25rem 0;
+  }
+  .step-card {
+    border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 1rem 1.1rem; background: var(--bg);
+  }
+  .step-card .badge {
+    display: inline-block; font-size: 0.72rem; font-weight: 700;
+    color: var(--accent); background: var(--accent-soft);
+    padding: 0.15rem 0.5rem; border-radius: 999px; margin-bottom: 0.5rem;
+  }
+
+  footer {
+    margin-top: 4rem; padding-top: 1.5rem; border-top: 1px solid var(--border);
+    color: var(--text-muted); font-size: 0.85rem;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="hero">
+    <div class="eyebrow">Skill Distribution / Remote MCP Server</div>
+    <h1>skill-mcp</h1>
+    <p class="lead">
+      Claude・Claude Code・Cursor などに「本人専用の接続URLを1本渡すだけ」で、
+      サーバー側に一元管理したスキル（プロンプト）を使わせるための、
+      Cloudflare Workers 上で動くリモート MCP サーバーです。
+    </p>
+    <nav class="toc">
+      <a href="#overview">概要</a>
+      <a href="#architecture">アーキテクチャ</a>
+      <a href="#flow">利用の流れ</a>
+      <a href="#usage">クライアント接続手順</a>
+      <a href="#security">セキュリティ設計</a>
+      <a href="#ops">運用</a>
+    </nav>
+  </header>
+
+  <section id="overview">
+    <h2>概要</h2>
+    <p>
+      受講生・利用者ごとに専用トークン付きのURLを1本発行するだけで、管理者が用意したスキル
+      （マーケティング壁打ち・入口設計・メルマガ設計 など）をそのまま使わせられます。
+      スキル本文はサーバー側で一元管理しているため、内容を更新すれば次の呼び出しから全員に反映されます。
+    </p>
+    <div class="grid-3">
+      <div class="step-card">
+        <div class="badge">配布</div>
+        <div>URLを1本渡すだけ。個別のセットアップ作業は不要。</div>
+      </div>
+      <div class="step-card">
+        <div class="badge">制御</div>
+        <div>トークンごとに使えるスキルを制限。失効も即時反映。</div>
+      </div>
+      <div class="step-card">
+        <div class="badge">記録</div>
+        <div>誰が・いつ・どのスキルを使ったかをログに記録。</div>
+      </div>
+    </div>
+  </section>
+
+  <section id="architecture">
+    <h2>アーキテクチャ</h2>
+    <p>
+      Cloudflare Workers 1つの上で、利用者向けの MCP エンドポイント（<code>/mcp</code>）と
+      管理者向けの管理API（<code>/admin/*</code>）を提供しています。状態は D1（SQLite互換）に
+      持たせ、Durable Objects のようなセッション管理は使わないステートレス設計です。
+    </p>
+    <div class="diagram">
+      <pre class="mermaid">
+flowchart LR
+  subgraph clients["クライアント"]
+    CC["Claude Code"]
+    CD["Claude / Claude Desktop"]
+    CU["Cursor"]
+  end
+
+  subgraph worker["Cloudflare Workers"]
+    MCP["/mcp（Streamable HTTP）"]
+    ADMIN["/admin/*（管理API）"]
+  end
+
+  D1[("D1\ntokens / usage_logs")]
+  SKILLS[["src/skills/*.md\n（スキル本文）"]]
+  OPERATOR(["管理者"])
+
+  CC -- "token" --> MCP
+  CD -- "token" --> MCP
+  CU -- "token" --> MCP
+  MCP -- "検証・利用ログ記録" --> D1
+  MCP -- "本文読込" --> SKILLS
+  OPERATOR -- "ADMIN_TOKEN" --> ADMIN
+  ADMIN -- "発行・失効・一覧" --> D1
+      </pre>
+    </div>
+    <p>
+      未許可のスキルは MCP ツールとして登録されないため、
+      <code>tools/list</code> にすら現れません。実行時の権限チェック漏れが構造的に起きない設計です。
+    </p>
+  </section>
+
+  <section id="flow">
+    <h2>利用の流れ</h2>
+    <p>接続してから実際にスキルが使われるまでの一連の流れです。</p>
+    <div class="diagram">
+      <pre class="mermaid">
+sequenceDiagram
+  actor U as 利用者
+  participant C as クライアント
+  participant W as Worker (/mcp)
+  participant D as D1
+
+  U->>C: 「マーケの壁打ちして」
+  C->>W: tools/list（Bearer token）
+  W->>D: トークン検証
+  D-->>W: 有効・許可スキル一覧
+  W-->>C: 許可されたツールのみ返す
+  C->>W: tools/call skill_marketing_sparring
+  W-->>C: スキル本文（プロンプト）
+  W->>D: 利用ログを非同期で記録
+  C-->>U: スキルに沿って壁打ち開始
+      </pre>
+    </div>
+
+    <h3>トークンのライフサイクル</h3>
+    <div class="diagram">
+      <pre class="mermaid">
+stateDiagram-v2
+  [*] --> active: 管理者が発行
+  active --> revoked: 管理者が失効
+  active --> expired: 有効期限切れ
+  revoked --> [*]
+  expired --> [*]
+      </pre>
+    </div>
+  </section>
+
+  <section id="usage">
+    <h2>クライアント接続手順</h2>
+    <p>管理者から接続URLを受け取ったら、使っているクライアントに応じて登録します。</p>
+
+    <h3>Claude Code</h3>
+    <pre><code>claude mcp add --transport http skill-mcp "https://&lt;worker-url&gt;/mcp" \
+  --header "Authorization: Bearer &lt;あなたのトークン&gt;"</code></pre>
+    <p>登録後 <code>/mcp</code> コマンドで <code>connected</code> になっていれば成功です。</p>
+
+    <h3>Cursor</h3>
+    <p><code>~/.cursor/mcp.json</code>（全プロジェクト共通）または <code>.cursor/mcp.json</code>（プロジェクト単位）に追記します。</p>
+    <pre><code>{
+  "mcpServers": {
+    "skill-mcp": {
+      "url": "https://&lt;worker-url&gt;/mcp",
+      "headers": {
+        "Authorization": "Bearer &lt;あなたのトークン&gt;"
+      }
+    }
+  }
+}</code></pre>
+
+    <h3>Claude（claude.ai / Claude Desktop）</h3>
+    <p>
+      「カスタムコネクタ」機能（Settings もしくは Customize → Connectors → Add custom connector）で登録します。
+      ヘッダー認証は現状ベータのため、接続URLにトークンを直接含めた形をそのまま貼るのが確実です。
+    </p>
+    <pre><code>https://&lt;worker-url&gt;/mcp?token=&lt;あなたのトークン&gt;</code></pre>
+
+    <h3>接続後の使い方</h3>
+    <p>登録が終われば、あとは普通に話しかけるだけです。</p>
+    <div class="card accent">
+      <p>「マーケの壁打ちして、この訴求文言どう思う？」</p>
+      <p>と言えば、対応するスキルのツールが自動的に選ばれ、スキル本文が適用されます。
+      何が使えるか分からないときは「使えるスキル一覧を見せて」と言えば一覧が返ります。</p>
+    </div>
+  </section>
+
+  <section id="security">
+    <h2>セキュリティ設計</h2>
+    <table>
+      <tr><th>項目</th><th>設計</th></tr>
+      <tr>
+        <td>トークン</td>
+        <td>256bit乱数。サーバーには SHA-256 ハッシュのみ保存し、平文は保存しない。発行時に一度だけ表示される。</td>
+      </tr>
+      <tr>
+        <td>権限制御</td>
+        <td>許可されていないスキルはツールとして登録されないため、一覧にも実行にも現れない。</td>
+      </tr>
+      <tr>
+        <td>失効</td>
+        <td>管理APIから即時失効可能。以後そのトークンでの接続は全て拒否される。</td>
+      </tr>
+      <tr>
+        <td>管理用認証情報</td>
+        <td>受講生用トークンとは別名前空間（ADMIN_TOKEN）で保護。値自体をどこにも保存せず、
+        パスフレーズから毎回同じ値を計算で導出する運用も可能。</td>
+      </tr>
+      <tr>
+        <td>監査</td>
+        <td>誰が・いつ・どのスキルを呼んだかを利用ログに記録。異常があれば即座に該当トークンを失効できる。</td>
+      </tr>
+    </table>
+  </section>
+
+  <section id="ops">
+    <h2>運用</h2>
+    <p>スキル本文はサーバー側の1ファイルとして管理しており、内容を更新して再デプロイするだけで
+    次回呼び出しから全利用者に反映されます。個別のクライアント側の再設定は不要です。</p>
+    <p>トークンの発行・一覧・失効は管理API経由でコマンド一つで行えます。利用状況もいつでも確認できます。</p>
+  </section>
+
+  <footer>
+    skill-mcp — Cloudflare Workers / D1 / Model Context Protocol (Streamable HTTP)
+  </footer>
+
+</div>
+
+<script type="module">
+  import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+  const isDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+  mermaid.initialize({
+    startOnLoad: true,
+    theme: isDark ? "dark" : "default",
+    securityLevel: "strict",
+  });
+</script>
+</body>
+</html>
