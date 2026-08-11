@@ -747,6 +747,23 @@ stateDiagram-v2
       <li><a href="#skills">スキルを登録する</a>で追加した本文ファイルと、一覧の設定ファイルからそのスキルのエントリを削除する</li>
       <li>デプロイし直す（<code>npx wrangler deploy</code>）</li>
     </ol>
+    <p>実装をClaude Codeなどに任せている場合は、「スキルを削除して」だけでは<strong>どのスキルか</strong>が伝わらない。
+    削除したいスキルの<code>id</code>またはタイトルを添えて、次のように頼むとよい:</p>
+    <div class="copy-block">
+      <div class="copy-block-head">
+        <span>Claude Code に貼り付ける（スキル削除）</span>
+        <button class="copy-btn" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+          <span>コピー</span>
+        </button>
+      </div>
+      <pre class="copy-text">スキルを1つ削除してください。
+
+対象: entry-design（入口設計）
+
+本文ファイルと一覧の設定ファイルの両方からこのスキルのエントリを削除し、
+デプロイまで行ってください。</pre>
+    </div>
     <p>
       削除したスキルを許可スキルに含むトークンがあってもエラーにはならず、該当ツールが利用者側の一覧
       （<code>tools/list</code>）から消えるだけ。過去の利用ログはそのまま残る。
